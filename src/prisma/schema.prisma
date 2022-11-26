@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String    @id @default(uuid())
+  username String    @unique
+  email    String    @unique
+  password String
+  profile  Profile[]
+  posts    Post[]    @relation("postRelationship")
+  comments Comment[] @relation("commentRelationship")
+}
+
+model Profile {
+  id         String   @unique @default(uuid())
+  joinDate   DateTime @default(now())
+  location   String   @default("Not Specified")
+  profilePic String   @default("https://media.istockphoto.com/id/476085198/photo/businessman-silhouette-as-avatar-or-default-profile-picture.jpg?b=1&s=612x612&w=0&k=20&c=PdCpqqV_hmKlW0o8t2TPwDEnOWBGSybOE4NiB8CvwoE=")
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String   @unique
+}
+
+model Post {
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  published Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  // one to many relationship
+  user      User      @relation("postRelationship", fields: [userId], references: [id])
+  userId    String
+  // comment relationship
+  comments  Comment[] @relation("commentRelationshipWithPost")
+}
+
+// https://stackoverflow.com/questions/14207137/how-to-store-data-like-as-facebooks-likes
+// https://hevodata.com/learn/mysql-composite-primary-key/#:~:text=You%20can%20create%20a%20MySQL,tables%20using%20ALTER%20TABLE%20statement.
+model Like {
+  user_id String
+  post_id String
+
+  // block attribures
+  @@id([user_id, post_id])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  // one to many relationships
+  user      User     @relation("commentRelationship", fields: [userId], references: [id])
+  userId    String
+  post      Post     @relation("commentRelationshipWithPost", fields: [postId], references: [id])
+  postId    String
+}
