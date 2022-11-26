@@ -1,9 +1,9 @@
 const express = require("express");
 
 // import routers
-authRouter = require("./routes/auth");
-postRouter = require("./routes/post");
-likeRouter = require("./routes/postLike");
+authRouter = require("./src/routes/auth");
+postRouter = require("./src/routes/post");
+likeRouter = require("./src/routes/postLike");
 
 app = express();
 
