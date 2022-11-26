@@ -1,6 +1,14 @@
 const postQuery = require("../services/post.service");
 
+// data validation
+const createPostValidator = require("../validators/createPostValidator");
+
 const post = async (req, res, next) => {
+  // validate user data
+  const dataValidation = createPostValidator.validate(req.body);
+  if (dataValidation.error)
+    return res.status(400).send(dataValidation.error.details[0].message);
+
   try {
     const response = await postQuery.createPost(req);
 
@@ -41,6 +49,11 @@ const get = async (req, res, next) => {
 };
 
 const put = async (req, res, next) => {
+  // validate user data
+  const dataValidation = createPostValidator.validate(req.body);
+  if (dataValidation.error)
+    return res.status(400).send(dataValidation.error.details[0].message);
+
   try {
     const response = await postQuery.updatePost(req);
 
